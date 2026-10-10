@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
   <meta name="robots" content="noindex">
   <meta name="theme-color" content="#f4f4f4" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0d0d0d" media="(prefers-color-scheme: dark)">
@@ -39,10 +40,17 @@
     .enter:active{transform:scale(.98);opacity:.9}.enter:disabled{opacity:.55;cursor:wait}
     body.leaving{animation:fadeOut .32s ease-out forwards}@keyframes fadeOut{to{opacity:0;transform:translateY(-4px)}}
     @media(prefers-reduced-motion:reduce){body.leaving{animation-duration:.01ms}}
+    .gate-logo{
+  display:block;
+  width:72px;height:72px;
+  margin:0 auto 1rem;
+  border-radius:14px;
+}
   </style>
 </head>
 <body>
-  <main class="gate-inner">
+ <main class="gate-inner">
+    <img class="gate-logo" src="/icons/icon-192.png" alt="" width="72" height="72">
     <h1>Sponsor Tracker</h1>
     <p class="tagline">sankalpa 1.0</p>
     <p class="checking" id="checking" role="status">Checking sign-in…</p>
