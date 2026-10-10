@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>Sponsor Tracker</title><meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#f7f7f8;--surface:#fff;--surface2:#f0f0f2;--border:#e2e2e6;--text:#111113;--muted:#6b6b7b;--violet:#7c3aed;
+--c-confirmed:#16a34a;--c-pending:#2563eb;--c-maybe:#d97706;--c-notconnected:#6b6b7b;--c-rejected:#dc2626;
+--fd:'Playfair Display',Georgia,serif;--fb:'DM Sans',system-ui,sans-serif;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a0a0a;--surface:#1a1a1a;--surface2:#222226;--border:#2a2a2e;--text:#f0f0f2;--muted:#88889a;--c-pending:#60a5fa;--c-notconnected:#9ca3af;--c-rejected:#ef4444;--c-confirmed:#22c55e;--c-maybe:#f59e0b}}
+:root[data-theme="dark"]{--bg:#0a0a0a;--surface:#1a1a1a;--surface2:#222226;--border:#2a2a2e;--text:#f0f0f2;--muted:#88889a;--c-pending:#60a5fa;--c-notconnected:#9ca3af;--c-rejected:#ef4444;--c-confirmed:#22c55e;--c-maybe:#f59e0b}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font:14px var(--fb);min-height:100vh}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 24px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+h1{font:700 20px var(--fd)}
+h1 small{display:block;font:400 11px var(--fb);color:var(--muted);margin-top:2px}
+main{padding:20px 24px;max-width:1100px;margin:0 auto}
+.btn{padding:8px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text);font:500 13px var(--fb);cursor:pointer}
+.btn:hover{border-color:var(--violet);color:var(--violet)}
+.btn.primary{background:var(--violet);border-color:var(--violet);color:#fff}
+.btn.primary:hover{background:#6d28d9;color:#fff}
+.btn.danger{color:var(--c-rejected)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:18px}
+.stat{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--k,var(--violet));border-radius:10px;padding:14px;cursor:pointer}
+.stat.on{outline:2px solid var(--k,var(--violet))}
+.stat b{display:block;font:700 26px var(--fd)}
+.stat span{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted)}
+.bar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+input,select,textarea{font:14px var(--fb);background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:8px 10px;width:100%}
+.bar input{flex:1;min-width:180px}.bar select{width:auto}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:640px}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}tr:hover td{background:var(--surface2)}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;color:var(--k);background:color-mix(in srgb,var(--k) 14%,transparent);white-space:nowrap}
+.muted{color:var(--muted);font-size:12px}
+.empty{padding:36px;text-align:center;color:var(--muted)}
+.modal{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;padding:16px;z-index:20}
+.modal.open{display:flex}
+.box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;width:480px;max-width:100%;max-height:90vh;overflow:auto}
+.box h2{font:700 17px var(--fd);margin-bottom:14px}
+.box label{display:block;font-size:12px;color:var(--muted);margin:10px 0 4px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.acts{display:flex;justify-content:space-between;gap:8px;margin-top:18px}
+.burger{background:none;border:1px solid var(--border);border-radius:6px;padding:7px 9px;cursor:pointer;color:var(--text);display:flex}
+.burger:hover{border-color:var(--violet);color:var(--violet)}
+.brand{display:flex;align-items:center;gap:12px}
+.drawer{position:fixed;top:0;bottom:0;left:0;width:260px;max-width:85vw;background:var(--surface);border-right:1px solid var(--border);z-index:30;transform:translateX(-100%);transition:transform .22s ease;padding:calc(18px + env(safe-area-inset-top,0px)) 0 18px;display:flex;flex-direction:column}
+.drawer.open{transform:none}
+.drawer h3{font:700 16px var(--fd);padding:0 18px 12px;border-bottom:1px solid var(--border);margin-bottom:8px}
+.overlay{position:fixed;inset:0;background:#0007;z-index:25;display:none}
+.overlay.open{display:block}
+.mi{display:flex;align-items:center;gap:10px;padding:11px 18px;cursor:pointer;font-weight:500;border-left:3px solid transparent;color:var(--muted)}
+.mi:hover{background:var(--surface2);color:var(--text)}
+.mi.on{color:var(--text);background:var(--surface2);border-left-color:var(--k,var(--violet))}
+.mi i{width:9px;height:9px;border-radius:50%;background:var(--k,var(--violet))}
+.mi em{margin-left:auto;font-style:normal;font-size:12px;color:var(--muted)}
+.cur{font:700 16px var(--fd);margin-bottom:10px}
+@media(max-width:600px){main{padding:14px}header{padding:12px 14px}.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><button class="burger" id="burger" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><h1>Sponsor Tracker<small>Everyone's outreach in one place</small></h1></div>
+  <div style="display:flex;gap:8px">
+    <span class="muted" id="who" style="align-self:center"></span><button class="btn" id="exp">Export CSV</button><button class="btn" id="out">Sign out</button>
+    <button class="btn primary" id="add">+ Add contact</button>
+  </div>
+</header>
+<div class="overlay" id="ov"></div><nav class="drawer" id="drawer"><h3>Categories</h3><div id="menu"></div></nav>
+<main>
+  <div class="cur" id="cur"></div>
+  <div class="stats" id="stats"></div>
+  <div class="bar">
+    <input id="q" placeholder="Search name, phone, location, notes…"/>
+    <select id="by"><option value="">Everyone</option></select>
+  </div>
+  <div class="card"><table><thead><tr><th>Name</th><th>Location</th><th>Phone</th><th>Status</th><th>Contacted by</th><th>Notes</th><th></th></tr></thead><tbody id="rows"></tbody></table><div class="empty" id="empty" hidden></div></div>
+</main>
+<div class="modal" id="modal"><div class="box">
+  <h2 id="mt">Add contact</h2>
+  <label>Name *</label><input id="f-name"/>
+  <div class="row"><div><label>Location</label><input id="f-loc"/></div><div><label>Phone</label><input id="f-phone" inputmode="tel"/></div></div>
+  <div class="row"><div><label>Status</label><select id="f-status"></select></div><div><label>Contacted by</label><input id="f-by" placeholder="Who called?"/></div></div>
+  <label>Notes</label><textarea id="f-notes" rows="3" placeholder="What did they say? Follow-up date?"></textarea>
+  <div class="acts"><button class="btn danger" id="del" hidden>Delete</button><span style="flex:1"></span><button class="btn" id="cancel">Cancel</button><button class="btn primary" id="save">Save</button></div>
+</div></div>
+<script>
+const STATUS={pending:['Contact pending','var(--c-pending)'],confirmed:['Confirmed','var(--c-confirmed)'],maybe:['Maybe','var(--c-maybe)'],notconnected:['Not connected','var(--c-notconnected)'],rejected:['Hard rejection','var(--c-rejected)']};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let data=[],col=null,filter='',editing=null,me={name:''};
+$('f-status').innerHTML=Object.entries(STATUS).map(([k,v])=>`<option value="${k}">${v[0]}</option>`).join('');
+
+function render(){
+  const q=$('q').value.toLowerCase(),by=$('by').value;
+  const counts={};Object.keys(STATUS).forEach(k=>counts[k]=0);data.forEach(d=>{if(counts[d.status]!=null)counts[d.status]++});
+  $('stats').innerHTML=`<div class="stat ${!filter?'on':''}" data-s=""><b>${data.length}</b><span>Total</span></div>`+
+    Object.entries(STATUS).map(([k,v])=>`<div class="stat ${filter===k?'on':''}" data-s="${k}" style="--k:${v[1]}"><b>${counts[k]}</b><span>${v[0]}</span></div>`).join('');
+  $('menu').innerHTML=`<div class="mi ${!filter?'on':''}" data-s=""><i></i>All contacts<em>${data.length}</em></div>`+
+    Object.entries(STATUS).map(([k,v])=>`<div class="mi ${filter===k?'on':''}" data-s="${k}" style="--k:${v[1]}"><i></i>${v[0]}<em>${counts[k]}</em></div>`).join('');
+  $('cur').textContent=filter?STATUS[filter][0]:'All contacts';
+  const people=[...new Set(data.map(d=>d.by).filter(Boolean))].sort();
+  $('by').innerHTML='<option value="">Everyone</option>'+people.map(p=>`<option ${p===by?'selected':''}>${esc(p)}</option>`).join('');
+  const list=data.filter(d=>(!filter||d.status===filter)&&(!by||d.by===by)&&(!q||[d.name,d.phone,d.location,d.notes,d.by].join(' ').toLowerCase().includes(q)))
+    .sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+  $('rows').innerHTML=list.map(d=>{const s=STATUS[d.status]||STATUS.pending;return `<tr>
+    <td><b>${esc(d.name)}</b>${d.updatedBy?`<div class="muted">edited by ${esc(d.updatedBy)}</div>`:''}</td><td>${esc(d.location)||'<span class="muted">—</span>'}</td>
+    <td>${d.phone?`<a href="tel:${esc(d.phone.replace(/[^\d+]/g,''))}" style="color:inherit">${esc(d.phone)}</a>`:'—'}</td>
+    <td><span class="badge" style="--k:${s[1]}">${s[0]}</span></td>
+    <td>${esc(d.by)||'<span class="muted">—</span>'}</td><td class="muted">${esc(d.notes)}</td>
+    <td><button class="btn" data-e="${esc(d.id)}">Edit</button></td></tr>`}).join('');
+  $('empty').hidden=list.length>0;
+  $('empty').textContent=col?(data.length?'No contacts match your filters.':'No contacts yet — add the first one.'):'Loading…';
+}
+$('stats').onclick=e=>{const s=e.target.closest('.stat');if(!s)return;filter=s.dataset.s===filter?'':s.dataset.s;render()};
+const setMenu=o=>{$('drawer').classList.toggle('open',o);$('ov').classList.toggle('open',o)};
+$('burger').onclick=()=>setMenu(true);$('ov').onclick=()=>setMenu(false);
+$('menu').onclick=e=>{const m=e.target.closest('.mi');if(!m)return;filter=m.dataset.s;setMenu(false);render()};
+$('q').oninput=render;$('by').onchange=render;
+$('rows').onclick=e=>{const b=e.target.closest('[data-e]');if(b)openForm(data.find(d=>d.id===b.dataset.e))};
+function openForm(d){
+  editing=d||null;$('mt').textContent=d?'Edit contact':'Add contact';$('del').hidden=!d;
+  $('f-name').value=d?.name||'';$('f-loc').value=d?.location||'';$('f-phone').value=d?.phone||'';
+  $('f-status').value=d?.status||'pending';$('f-by').value=d?.by||me.name;$('f-notes').value=d?.notes||'';
+  $('modal').classList.add('open');$('f-name').focus();
+}
+const close=()=>$('modal').classList.remove('open');
+$('add').onclick=()=>col?openForm():alert('Still loading. Try again in a moment.');
+$('cancel').onclick=close;$('modal').onclick=e=>{if(e.target===$('modal'))close()};
+$('save').onclick=async()=>{
+  const name=$('f-name').value.trim();if(!name){$('f-name').focus();return}
+  const by=$('f-by').value.trim();
+  const rec={name,location:$('f-loc').value.trim(),phone:$('f-phone').value.trim(),status:$('f-status').value,by,notes:$('f-notes').value.trim(),updatedAt:editing?editing.updatedAt:undefined};
+  try{
+    await api(editing?'PUT':'POST',editing?'?id='+encodeURIComponent(editing.id):'',rec);close();await load();
+  }catch(err){
+    if(String(err.message).includes('changed by someone else')){
+      alert('Someone else edited this contact. Reloading the latest version.');
+      close();await load();
+    }else{
+      alert('Could not save: '+(err.message||err.code));
+    }
+  }
+};
+$('del').onclick=async()=>{if(!editing||!confirm('Delete '+editing.name+'?'))return;try{await api('DELETE','?id='+encodeURIComponent(editing.id));close();await load()}catch(err){alert('Could not delete: '+(err.message||err.code))}};
+$('exp').onclick=()=>{
+  const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+  const csv='Name,Location,Phone,Status,Contacted by,Notes\n'+data.map(d=>[d.name,d.location,d.phone,(STATUS[d.status]||[d.status])[0],d.by,d.notes].map(q).join(',')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='sponsor-contacts.csv';a.click();URL.revokeObjectURL(a.href);
+};
+async function api(method,qs,body){
+  const r=await fetch('/api/contacts'+qs,{method,credentials:'same-origin',headers:{'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});
+  if(r.status===401){location.replace('/?expired=1');throw new Error('Signed out')}
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok)throw new Error(j.error||'Request failed');
+  return j;
+}
+async function load(){try{data=(await api('GET','')).contacts;col=true;render()}catch(e){}}
+$('out').onclick=async()=>{try{await fetch('/api/logout',{method:'POST',credentials:'same-origin'})}catch{}location.replace('/')};
+(async()=>{
+  try{const j=await (await fetch('/api/me',{credentials:'same-origin',cache:'no-store'})).json();if(!j.user){location.replace('/');return}me=j.user;$('who').textContent=me.name}catch{}
+  await load();
+  setInterval(()=>{if(!document.hidden&&!$('modal').classList.contains('open'))load()},5000);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)load()});
+})();
+</script>
+</body>
+</html>

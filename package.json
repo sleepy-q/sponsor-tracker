@@ -1,0 +1,7 @@
+{
+  "name": "sponsor-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "engines": { "node": "24.x" },
+  "dependencies": { "@neondatabase/serverless": "^1.1.0" }
+}
