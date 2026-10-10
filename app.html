@@ -92,12 +92,21 @@ tr:hover td{background:var(--surface2)}
 .box h2{font-size:1.4rem}
 .drawer{background:var(--bg)}
 @media(max-width:600px){header{padding:14px;gap:12px}main{padding:16px 14px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.bar input{min-width:100%}.card{overflow-x:auto}.bar .btn{width:100%}}
+.brand-logo{
+  width:32px;
+  height:32px;
+  border-radius:8px;
+  flex:0 0 auto;
+}
 </style>
 </head>
 <body>
 <header>
   <button class="burger" id="burger" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
-  <div class="brand"><h1>Sponsor Tracker<small>sankalpa 1.0</small></h1></div>
+  <div class="brand">
+  <img class="brand-logo" src="/icons/icon-192.png" alt="" width="32" height="32">
+  <h1>Sponsor Tracker<small>sankalpa 1.0</small></h1>
+  </div>
   <span class="muted" id="who"></span>
 </header>
 <div class="overlay" id="ov"></div>
